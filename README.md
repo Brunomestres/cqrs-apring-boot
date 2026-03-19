@@ -1,16 +1,16 @@
 # training-cqrs
 
-Projeto de estudo para praticar o padrão **CQRS (Command Query Responsibility Segregation)** com **Java 17**, **Maven** e **Spring Boot**.
+Projeto de estudo para praticar o padrao **CQRS (Command Query Responsibility Segregation)** com **Java 17**, **Maven** e **Spring Boot**.
 
-No estado atual, o repositório já está organizado como um projeto **multi-módulo**, separando responsabilidades entre escrita (`command`) e leitura (`query`), mas ainda está em fase inicial de implementação.
+No estado atual, o repositorio ja esta organizado como um projeto **multi-modulo**, separando responsabilidades entre escrita (`command`) e leitura (`query`), mas ainda esta em fase inicial de implementacao.
 
 ## Objetivo
 
-A ideia deste projeto é servir como base de treinamento para uma arquitetura em que:
+A ideia deste projeto e servir como base de treinamento para uma arquitetura em que:
 
-- o módulo `command` concentra operações de escrita e regras de negócio;
-- o módulo `query` concentra operações de leitura e consultas otimizadas;
-- tecnologias diferentes podem ser usadas para cada lado da aplicação, de acordo com a necessidade.
+- o modulo `command` concentra operacoes de escrita e regras de negocio;
+- o modulo `query` concentra operacoes de leitura e consultas otimizadas;
+- tecnologias diferentes podem ser usadas para cada lado da aplicacao, de acordo com a necessidade.
 
 ## Estrutura do projeto
 
@@ -32,13 +32,13 @@ training-cqrs/
 `- mvnw.cmd
 ```
 
-## Módulos
+## Modulos
 
 ### `command`
 
-Responsável pela parte de **escrita** da aplicação.
+Responsavel pela parte de **escrita** da aplicacao.
 
-Dependências já adicionadas:
+Dependencias ja adicionadas:
 
 - Spring Boot
 - Spring Data JPA
@@ -49,16 +49,16 @@ Dependências já adicionadas:
 - MapStruct
 - Lombok
 
-Entidades iniciais já criadas:
+Entidades iniciais ja criadas:
 
 - `Product`
 - `Review`
 
 ### `query`
 
-Responsável pela parte de **leitura** da aplicação.
+Responsavel pela parte de **leitura** da aplicacao.
 
-Atualmente herda do projeto principal dependências como:
+Atualmente herda do projeto principal dependencias como:
 
 - Spring Data MongoDB
 - Kafka
@@ -93,40 +93,40 @@ Atualmente herda do projeto principal dependências como:
 
 ## Como executar os módulos
 
-No momento, as classes principais `CommandApplication` e `QueryApplication` ainda estão como classes Java simples, sem a configuração completa de inicialização do Spring Boot.
+No momento, as classes principais `CommandApplication` e `QueryApplication` ainda estao como classes Java simples, sem a configuracao completa de inicializacao do Spring Boot.
 
-Ou seja, o projeto **ainda não está pronto para subir como duas APIs funcionais**, mas já pode ser evoluído a partir da estrutura existente.
+Ou seja, o projeto **ainda nao esta pronto para subir como duas APIs funcionais**, mas ja pode ser evoluido a partir da estrutura existente.
 
 ## Estado atual
 
-Hoje o projeto contém:
+Hoje o projeto contem:
 
-- agregação Maven com os módulos `command` e `query`;
-- dependências principais para uma arquitetura CQRS;
-- modelo inicial de domínio com `Product` e `Review`;
-- classes de entrada para cada módulo.
+- agregacao Maven com os modulos `command` e `query`;
+- dependencias principais para uma arquitetura CQRS;
+- modelo inicial de dominio com `Product` e `Review`;
+- classes de entrada para cada modulo.
 
 Ainda faltam, por exemplo:
 
-- anotações Spring Boot nas classes principais;
+- anotacoes Spring Boot nas classes principais;
 - controllers, services e repositories;
-- configuração de banco relacional no `command`;
-- configuração de leitura no `query`;
-- integração entre escrita e leitura via eventos;
+- configuracao de banco relacional no `command`;
+- configuracao de leitura no `query`;
+- integracao entre escrita e leitura via eventos;
 - testes automatizados;
 - arquivos `application.yml` com propriedades preenchidas.
 
-## Próximos passos sugeridos
+## Proximos passos sugeridos
 
-Uma evolução natural para este projeto seria:
+Uma evolucao natural para este projeto seria:
 
-1. transformar `command` e `query` em aplicações Spring Boot executáveis;
+1. transformar `command` e `query` em aplicacoes Spring Boot executaveis;
 2. modelar os casos de uso de escrita e leitura;
-3. persistir escrita com MySQL no módulo `command`;
-4. publicar eventos com Kafka após comandos;
-5. materializar projeções de leitura no módulo `query`;
+3. persistir escrita com MySQL no modulo `command`;
+4. publicar eventos com Kafka apos comandos;
+5. materializar projecoes de leitura no modulo `query`;
 6. expor endpoints REST para comandos e consultas.
 
-## Observação
+## Observacao
 
-Este repositório está com cara de **base de treinamento/estudo**, não de aplicação finalizada. A README foi escrita refletindo o código atual, para evitar documentar funcionalidades que ainda não existem.
+Este repositorio esta com cara de **base de treinamento/estudo**, nao de aplicacao finalizada. A README foi escrita refletindo o codigo atual, para evitar documentar funcionalidades que ainda nao existem.
