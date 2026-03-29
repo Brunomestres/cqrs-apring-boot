@@ -1,132 +1,204 @@
 # training-cqrs
 
-Projeto de estudo para praticar o padrao **CQRS (Command Query Responsibility Segregation)** com **Java 17**, **Maven** e **Spring Boot**.
+Projeto de estudo para praticar **CQRS (Command Query Responsibility Segregation)** com **Java 17**, **Spring Boot**, **MySQL**, **MongoDB** e **Kafka**.
 
-No estado atual, o repositorio ja esta organizado como um projeto **multi-modulo**, separando responsabilidades entre escrita (`command`) e leitura (`query`), mas ainda esta em fase inicial de implementacao.
+Hoje o fluxo principal do projeto funciona assim:
 
-## Objetivo
+- o modulo `command` recebe comandos e persiste no MySQL;
+- depois publica eventos no Kafka;
+- o modulo `query` consome esses eventos;
+- por fim materializa a leitura no MongoDB.
 
-A ideia deste projeto e servir como base de treinamento para uma arquitetura em que:
-
-- o modulo `command` concentra operacoes de escrita e regras de negocio;
-- o modulo `query` concentra operacoes de leitura e consultas otimizadas;
-- tecnologias diferentes podem ser usadas para cada lado da aplicacao, de acordo com a necessidade.
-
-## Estrutura do projeto
+## Arquitetura
 
 ```text
-training-cqrs/
-|- command/
-|  |- src/main/java/br/com/cqrstraining/
-|  |  |- CommandApplication.java
-|  |  `- domain/
-|  |     |- Product.java
-|  |     `- Review.java
-|  `- pom.xml
-|- query/
-|  |- src/main/java/br/com/cqrstraining/
-|  |  `- QueryApplication.java
-|  `- pom.xml
-|- pom.xml
-|- mvnw
-`- mvnw.cmd
+Client
+  |
+  v
+command API -> MySQL -> Kafka -> query API -> MongoDB
 ```
 
 ## Modulos
 
 ### `command`
 
-Responsavel pela parte de **escrita** da aplicacao.
+Responsavel pela escrita.
 
-Dependencias ja adicionadas:
-
-- Spring Boot
-- Spring Data JPA
-- MySQL Driver
-- Kafka
-- Validation
-- Web MVC
-- MapStruct
-- Lombok
-
-Entidades iniciais ja criadas:
-
-- `Product`
-- `Review`
+- persiste produtos e reviews no MySQL
+- publica eventos no topico `tp-query`
+- endpoints de escrita para criar, atualizar e remover produtos
+- endpoint para criar review
 
 ### `query`
 
-Responsavel pela parte de **leitura** da aplicacao.
+Responsavel pela leitura.
 
-Atualmente herda do projeto principal dependencias como:
+- consome eventos do Kafka
+- monta a projecao de produtos no MongoDB
+- expõe endpoints de consulta
 
-- Spring Data MongoDB
-- Kafka
-- Validation
-- Web MVC
-
-## Tecnologias utilizadas
+## Tecnologias
 
 - Java 17
-- Maven Wrapper
 - Spring Boot 4.0.3
 - Spring Data JPA
-- MySQL
 - Spring Data MongoDB
+- MySQL
+- MongoDB
 - Apache Kafka
-- MapStruct
+- Kafdrop
+- phpMyAdmin
+- Mongo Express
 - Lombok
+- MapStruct
 
-## Como compilar
+## Infra com Docker
 
-### Windows
+O arquivo [`docker-compose.yml`](c:\Users\BrunoMestres\Desktop\pessoal\java\training-cqrs\docker-compose.yml) sobe:
+
+- Zookeeper
+- Kafka
+- Kafdrop
+- MySQL
+- phpMyAdmin
+- MongoDB
+- Mongo Express
+
+### Subir a infra
 
 ```bash
-.\mvnw.cmd clean install
+docker compose up -d
 ```
 
-### Linux / macOS
+### Portas
 
-```bash
-./mvnw clean install
+- Kafka: `9092`
+- Kafdrop: `http://localhost:9000`
+- MySQL: `3306`
+- phpMyAdmin: `http://localhost:8081`
+- MongoDB: `27018`
+- Mongo Express: `http://localhost:8082`
+
+### Credenciais
+
+#### MySQL
+
+- usuario: `root`
+- senha: `example`
+- database: `command`
+
+#### MongoDB
+
+- usuario: `root`
+- senha: `example`
+- authSource: `admin`
+- database de leitura: `query`
+
+#### Mongo Express
+
+- login web: `admin`
+- senha web: `pass`
+
+## Configuracao das aplicacoes
+
+### `command`
+
+Configurado em [`command/src/main/resources/application.yml`](c:\Users\BrunoMestres\Desktop\pessoal\java\training-cqrs\command\src\main\resources\application.yml):
+
+```yml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/command
+    username: root
+    password: example
 ```
 
-## Como executar os módulos
+### `query`
 
-No momento, as classes principais `CommandApplication` e `QueryApplication` ainda estao como classes Java simples, sem a configuracao completa de inicializacao do Spring Boot.
+Configurado em [`query/src/main/resources/application.yml`](c:\Users\BrunoMestres\Desktop\pessoal\java\training-cqrs\query\src\main\resources\application.yml):
 
-Ou seja, o projeto **ainda nao esta pronto para subir como duas APIs funcionais**, mas ja pode ser evoluido a partir da estrutura existente.
+```yml
+server:
+  port: 8083
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:example@localhost:27018/query?authSource=admin
+```
 
-## Estado atual
+## Endpoints
 
-Hoje o projeto contem:
+### Command API
 
-- agregacao Maven com os modulos `command` e `query`;
-- dependencias principais para uma arquitetura CQRS;
-- modelo inicial de dominio com `Product` e `Review`;
-- classes de entrada para cada modulo.
+Base path: `http://localhost:8080`
 
-Ainda faltam, por exemplo:
+- `POST /api/v1/products`
+- `PUT /api/v1/products/{id}`
+- `DELETE /api/v1/products/{id}`
+- `POST /api/v1/reviews`
 
-- anotacoes Spring Boot nas classes principais;
-- controllers, services e repositories;
-- configuracao de banco relacional no `command`;
-- configuracao de leitura no `query`;
-- integracao entre escrita e leitura via eventos;
-- testes automatizados;
-- arquivos `application.yml` com propriedades preenchidas.
+### Query API
 
-## Proximos passos sugeridos
+Base path: `http://localhost:8083`
 
-Uma evolucao natural para este projeto seria:
+- `GET /api/v1/products`
+- `GET /api/v1/products/{id}`
 
-1. transformar `command` e `query` em aplicacoes Spring Boot executaveis;
-2. modelar os casos de uso de escrita e leitura;
-3. persistir escrita com MySQL no modulo `command`;
-4. publicar eventos com Kafka apos comandos;
-5. materializar projecoes de leitura no modulo `query`;
-6. expor endpoints REST para comandos e consultas.
+## Exemplo de fluxo
 
-## Observacao
+### 1. Criar produto
 
-Este repositorio esta com cara de **base de treinamento/estudo**, nao de aplicacao finalizada. A README foi escrita refletindo o codigo atual, para evitar documentar funcionalidades que ainda nao existem.
+```http
+POST /api/v1/products
+Content-Type: application/json
+
+{
+  "name": "Notebook",
+  "description": "Notebook para estudo",
+  "imageUrl": "https://exemplo.com/notebook.png",
+  "value": 3500
+}
+```
+
+### 2. Consultar no modulo de leitura
+
+```http
+GET /api/v1/products
+```
+
+### 3. Criar review
+
+```http
+POST /api/v1/reviews
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "userName": "Bruno",
+  "description": "Produto muito bom",
+  "rating": 5
+}
+```
+
+Depois disso, a review passa a ficar dentro do produto salvo no Mongo.
+
+## Estrutura resumida
+
+```text
+training-cqrs/
+|- command/
+|- query/
+|- docker-compose.yml
+|- pom.xml
+|- mvnw
+`- mvnw.cmd
+```
+
+## Observacoes
+
+- o modulo `command` usa MySQL como fonte de escrita
+- o modulo `query` usa MongoDB como base de leitura
+- o topico Kafka utilizado atualmente e `tp-query`
+- para visualizar eventos, use o Kafdrop
+- para visualizar o MySQL, use o phpMyAdmin
+- para visualizar o MongoDB, use o Mongo Express
