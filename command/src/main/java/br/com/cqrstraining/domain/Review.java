@@ -1,5 +1,6 @@
 package br.com.cqrstraining.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,8 +21,11 @@ public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(nullable = false)
     private String userName;
+    @Column(nullable = false)
     private String description;
+    @Column(nullable = false)
     private Integer rating;
 
     @ManyToOne

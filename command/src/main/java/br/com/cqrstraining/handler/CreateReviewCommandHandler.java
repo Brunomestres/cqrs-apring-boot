@@ -1,13 +1,15 @@
 package br.com.cqrstraining.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import br.com.cqrstraining.domain.Review;
 import br.com.cqrstraining.domain.command.CreateReviewCommand;
 import br.com.cqrstraining.repository.ProductRepository;
 import br.com.cqrstraining.repository.ReviewRepository;
 
-public class CreateReviewCommadHandler implements CommandHandler<CreateReviewCommand> {
+@Component
+public class CreateReviewCommandHandler implements CommandHandler<CreateReviewCommand> {
 
     @Autowired
     private ReviewRepository reviewRepository;

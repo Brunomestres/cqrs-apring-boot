@@ -16,7 +16,7 @@ public class CommandBus {
     public void execute(final Command command) {
         try{ 
             String handlerBeanName = StringUtil.lowercaseFirstLetter(command.getClass().getSimpleName()) + "Handler";
-            CommandHandler<Command> handler = (CommandHandler<Command>) applicationContext.getBean(handlerBeanName);
+            CommandHandler handler = (CommandHandler) applicationContext.getBean(handlerBeanName);
             handler.handle(command);
         }catch(Exception e){
             throw new RuntimeException("Error executing command", e);
